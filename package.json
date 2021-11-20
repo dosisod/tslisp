@@ -1,0 +1,25 @@
+{
+  "name": "tslisp",
+  "version": "0.0.0",
+  "description": "A LISP dialect written in TypeScript",
+  "main": "dist/index.js",
+  "dependencies": {
+    "esbuild": "^0.13.15",
+    "typescript": "^4.5.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "dev": "esbuild ./src/ --outdir=dist --watch",
+    "build": "tsc --noEmit && esbuild ./src/ --outdir=dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github.com/dosisod/tslisp"
+  },
+  "keywords": [
+    "typescript",
+    "lisp"
+  ],
+  "author": "github.com/dosisod",
+  "license": "AGPL-3.0-only"
+}
