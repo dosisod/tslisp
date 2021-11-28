@@ -1,13 +1,26 @@
+/**
+@module tokenize
+@author Logan Hunt
+
+Tokens are strings of characters which have some semantic meaning, ie,
+a number, an identifier, and so on.
+
+Once code has been split up into tokens, the tokens can be analyzed, and
+a more complex representation of the program can be created.
+*/
+
 const isNumeric = (str: string): boolean => {
   return !isNaN(parseFloat(str));
 };
 
-
-const detectTokenType = (str: string): TokenType | null => {
+const detectTokenType = (str: string): TokenType => {
   if (str === '(') return TokenType.OpenParen;
   if (str === ')') return TokenType.CloseParen;
-  if (isNumeric(str)) return TokenType.Number;
   if (str === 'true' || str === 'false') return TokenType.Boolean;
+  if (str === 'defconstant') return TokenType.DefConstant;
+  if (str === 'defun') return TokenType.DefFunction;
+  if (str === 'defvar') return TokenType.DefVariable;
+  if (isNumeric(str)) return TokenType.Number;
   if (str.startsWith('\"')) return TokenType.String;
   if (str.startsWith(';')) return TokenType.Comment;
 
@@ -56,17 +69,10 @@ const chunkString = (str: string): string[] => {
 };
 
 const tokenize = (str: string): Token[] => {
-  const tokens: Token[] = [];
-
-  for (const chunk of chunkString(str)) {
-    const tokenType = detectTokenType(chunk);
-
-    if (tokenType !== null) {
-      tokens.push({ type: tokenType, content: chunk });
-    }
-  }
-
-  return tokens;
+  return chunkString(str).map(token => ({
+    type: detectTokenType(token),
+    content: token
+  }));
 };
 
 
@@ -78,6 +84,9 @@ export enum TokenType {
   String,
   Comment,
   Identifier,
+  DefConstant,
+  DefFunction,
+  DefVariable,
 }
 
 

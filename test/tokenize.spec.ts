@@ -60,4 +60,23 @@ describe('tokenize', () => {
     expect(tokens.every(token => token.type === TokenType.Identifier))
       .toBeTruthy();
   });
+
+  it('will parse keywords', () => {
+    const tokens = tokenize('defconstant defun defvar');
+
+    const mapping = [
+      TokenType.DefConstant,
+      TokenType.DefFunction,
+      TokenType.DefVariable,
+    ];
+
+    expect(tokens.length).toBe(3);
+
+    while (mapping.length !== 0) {
+      expect(tokens[0].type).toBe(mapping[0]);
+
+      tokens.shift();
+      mapping.shift();
+    }
+  });
 });
