@@ -22,4 +22,16 @@ describe('codegen', () => {
 
     expect(transpiled).toBe('console.log("hello world");');
   });
+
+  it('will transpile basic defconstant', () => {
+    const transpiled = transpileFixture('(defconstant pi 3.14)');
+
+    expect(transpiled).toBe('const pi = 3.14;');
+  });
+
+  it('will transpile basic defvar', () => {
+    const transpiled = transpileFixture('(defvar pi 3.14)');
+
+    expect(transpiled).toBe('let pi = 3.14;');
+  });
 });

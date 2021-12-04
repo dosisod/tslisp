@@ -88,6 +88,38 @@ const functionTokenGroupToNode = (tokens: TokenList): AstNode => {
   } as AstNodeFunction;
 };
 
+const defConstTokenGroupToNode = (tokens: TokenList): AstNode => {
+  if (tokens.length !== 3) {
+    throw 'defconstant node must be in form (defconstant name value)';
+  }
+
+  // TODO: handle name or value being a list, not a token
+  const name = (tokens[1] as Token).content;
+  const value = (tokens[2] as Token).content;
+
+  return {
+    type: AstNodeType.DefConstant,
+    name,
+    value
+  } as AstNodeDefConstant;
+};
+
+const defVariableTokenGroupToNode = (tokens: TokenList): AstNode => {
+  if (tokens.length !== 3) {
+    throw 'defvar node must be in form (defvar name value)';
+  }
+
+  // TODO: handle name or value being a list, not a token
+  const name = (tokens[1] as Token).content;
+  const value = (tokens[2] as Token).content;
+
+  return {
+    type: AstNodeType.DefVariable,
+    name,
+    value
+  } as AstNodeDefVariable;
+};
+
 const tokensToAst = (tokens: Token[]): AstTree => {
  tokens = tokens.filter(token => token.type !== TokenType.Comment);
 
@@ -121,6 +153,12 @@ const tokensToAst = (tokens: Token[]): AstTree => {
     if (firstToken?.type === TokenType.Identifier) {
       nodes.push(functionTokenGroupToNode(group));
     }
+    if (firstToken?.type === TokenType.DefConstant) {
+      nodes.push(defConstTokenGroupToNode(group));
+    }
+    if (firstToken?.type === TokenType.DefVariable) {
+      nodes.push(defVariableTokenGroupToNode(group));
+    }
   });
 
   return { nodes };
@@ -131,6 +169,8 @@ export enum AstNodeType {
   Function,
   Declaration,
   Expression,
+  DefConstant,
+  DefVariable,
 }
 
 export interface AstNode {
@@ -141,6 +181,16 @@ export interface AstNode {
 
 export interface AstNodeFunction extends AstNode {
   name: string;
+}
+
+export interface AstNodeDefConstant extends AstNode {
+  name: string;
+  value: string;
+}
+
+export interface AstNodeDefVariable extends AstNode {
+  name: string;
+  value: string;
 }
 
 export interface AstTree {

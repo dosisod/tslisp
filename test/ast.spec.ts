@@ -1,5 +1,5 @@
 import tokenize, { TokenType } from '../src/tokenize';
-import tokensToAst, { AstNodeFunction, AstNodeType } from '../src/ast';
+import tokensToAst, { AstNodeDefConstant, AstNodeDefVariable, AstNodeFunction, AstNodeType } from '../src/ast';
 
 describe('tokensToAst', () => {
   it('will parse basic set', () => {
@@ -79,5 +79,47 @@ describe('tokensToAst', () => {
 
     expect(() => tokensToAst(tokens))
       .toThrow('Cannot have list as first element of list');
+  });
+
+  it('will check for length of defconstant node', () => {
+    const tokens = tokenize('(defconstant)');
+
+    expect(() => tokensToAst(tokens))
+      .toThrow('defconstant node must be in form (defconstant name value)');
+  });
+
+  it('will parse defconstant nodes', () => {
+    const tokens = tokenize('(defconstant pi 3.14)');
+
+    const tree = tokensToAst(tokens);
+
+    expect(tree.nodes.length).toBe(1);
+
+    const node = (tree.nodes[0] as AstNodeDefConstant);
+
+    expect(node.type).toBe(AstNodeType.DefConstant);
+    expect(node.name).toBe('pi');
+    expect(node.value).toBe('3.14');
+  });
+
+  it('will check for length of defvar node', () => {
+    const tokens = tokenize('(defvar)');
+
+    expect(() => tokensToAst(tokens))
+      .toThrow('defvar node must be in form (defvar name value)');
+  });
+
+  it('will parse defvar nodes', () => {
+    const tokens = tokenize('(defvar pi 3.14)');
+
+    const tree = tokensToAst(tokens);
+
+    expect(tree.nodes.length).toBe(1);
+
+    const node = (tree.nodes[0] as AstNodeDefVariable);
+
+    expect(node.type).toBe(AstNodeType.DefVariable);
+    expect(node.name).toBe('pi');
+    expect(node.value).toBe('3.14');
   });
 });
