@@ -1,6 +1,6 @@
-import tokensToAst from "./ast";
-import tokenize from "./tokenize";
-import { astToJS } from "./codegen";
+import tokensToAst from "../src/ast";
+import tokenize from "../src/tokenize";
+import { astToJS } from "../src/codegen";
 
 
 const transpileFixture = (code: string): string => {
@@ -39,5 +39,41 @@ describe('codegen', () => {
     const transpiled = transpileFixture('(defun f (x) (defvar y x))');
 
     expect(transpiled).toBe('const f = (x) => { let y = x; };');
+  });
+
+  it('will handle built-in operations', () => {
+    const opers = {
+      // binary
+      '(+ 1 2)': '(1 + 2)',
+      '(- 1 2)': '(1 - 2)',
+      '(* 1 2)': '(1 * 2)',
+      '(/ 1 2)': '(1 / 2)',
+      '(= 1 2)': '(1 === 2)',
+      '(!= 1 2)': '(1 !== 2)',
+      '(or 1 2)': '(1 || 2)',
+      '(and 1 2)': '(1 && 2)',
+      '(xor 1 2)': '(1 ^ 2)',
+      '(mod 1 2)': '(1 % 2)',
+      '(< 1 2)': '(1 < 2)',
+      '(<= 1 2)': '(1 <= 2)',
+      '(> 1 2)': '(1 > 2)',
+      '(>= 1 2)': '(1 >= 2)',
+      '(exp 1 2)': '(1 ** 2)',
+      '(rshift 1 2)': '(1 << 2)',
+      '(lshift 1 2)': '(1 >> 2)',
+
+      // unary
+      '(not 1)': '!1',
+      '(neg 1)': '-1',
+
+      // list operators
+      '(list 1 2 3 4)': '[1, 2, 3, 4]'
+    };
+
+    for (const [key, value] of Object.entries(opers)) {
+      const transpiled = transpileFixture(key);
+
+      expect(transpiled).toBe(value);
+    }
   });
 });
