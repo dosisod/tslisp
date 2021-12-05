@@ -1,4 +1,4 @@
-import { AstNodeDefConstant, AstNodeDefVariable, AstNodeFunction, AstNodeType, AstTree } from "./ast";
+import { AstNodeDefConstant, AstNodeDefFunction, AstNodeDefVariable, AstNodeFunction, AstNodeType, AstTree } from "./ast";
 
 const astFunctionToJs = (node: AstNodeFunction): string => {
   const params = node.children?.map(node => {
@@ -16,6 +16,12 @@ const astDefVariableToJs = (node: AstNodeDefVariable): string => {
   return `let ${node.name} = ${node.value};`;
 };
 
+const astDefFunctionToJs = (node: AstNodeDefFunction): string => {
+  const body = astToJS({ nodes: node.children! });
+
+  return `const ${node.name} = (${node.params.join(", ")}) => { ${body} };`;
+};
+
 export const astToJS = (tree: AstTree): string => {
   switch (tree.nodes[0].type) {
     case AstNodeType.Function:
@@ -24,6 +30,8 @@ export const astToJS = (tree: AstTree): string => {
       return astDefConstantToJs(tree.nodes[0] as AstNodeDefConstant);
     case AstNodeType.DefVariable:
       return astDefVariableToJs(tree.nodes[0] as AstNodeDefVariable);
+    case AstNodeType.DefFunction:
+      return astDefFunctionToJs(tree.nodes[0] as AstNodeDefFunction);
     default: return '';
   }
 };

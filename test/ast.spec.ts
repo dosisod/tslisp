@@ -1,5 +1,5 @@
 import tokenize, { TokenType } from '../src/tokenize';
-import tokensToAst, { AstNodeDefConstant, AstNodeDefVariable, AstNodeFunction, AstNodeType } from '../src/ast';
+import tokensToAst, { AstNodeDefConstant, AstNodeDefFunction, AstNodeDefVariable, AstNodeFunction, AstNodeType } from '../src/ast';
 
 describe('tokensToAst', () => {
   it('will parse basic set', () => {
@@ -121,5 +121,51 @@ describe('tokensToAst', () => {
     expect(node.type).toBe(AstNodeType.DefVariable);
     expect(node.name).toBe('pi');
     expect(node.value).toBe('3.14');
+  });
+
+  it('will parse simple function declaration', () => {
+    const tokens = tokenize('(defun f () ())');
+
+    const tree = tokensToAst(tokens);
+
+    expect(tree.nodes.length).toBe(1);
+
+    const node = (tree.nodes[0] as AstNodeDefFunction);
+    expect(node.type).toBe(AstNodeType.DefFunction);
+    expect(node.name).toBe('f');
+    expect(node.params.length).toBe(0);
+    expect(node.children?.length).toBe(1);
+    expect(node.children?.[0].type).toBe(AstNodeType.Empty);
+  });
+
+  it('will parse single param function declaration', () => {
+    const tokens = tokenize('(defun f (x) ())');
+
+    const tree = tokensToAst(tokens);
+
+    expect(tree.nodes.length).toBe(1);
+
+    const node = (tree.nodes[0] as AstNodeDefFunction);
+    expect(node.type).toBe(AstNodeType.DefFunction);
+    expect(node.name).toBe('f');
+    expect(node.params.length).toBe(1);
+    expect(node.params[0]).toBe('x');
+    expect(node.children?.length).toBe(1);
+    expect(node.children?.[0].type).toBe(AstNodeType.Empty);
+  });
+
+  it('will parse function with body', () => {
+    const tokens = tokenize('(defun f () (defconstant x 1))');
+
+    const tree = tokensToAst(tokens);
+
+    expect(tree.nodes.length).toBe(1);
+
+    const node = (tree.nodes[0] as AstNodeDefFunction);
+    expect(node.type).toBe(AstNodeType.DefFunction);
+    expect(node.name).toBe('f');
+    expect(node.params.length).toBe(0);
+    expect(node.children?.length).toBe(1);
+    expect(node.children?.[0].type).toBe(AstNodeType.DefConstant);
   });
 });

@@ -34,4 +34,10 @@ describe('codegen', () => {
 
     expect(transpiled).toBe('let pi = 3.14;');
   });
+
+  it('will transpile defun node', () => {
+    const transpiled = transpileFixture('(defun f (x) (defvar y x))');
+
+    expect(transpiled).toBe('const f = (x) => { let y = x; };');
+  });
 });

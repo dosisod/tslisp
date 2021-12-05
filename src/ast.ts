@@ -110,6 +110,7 @@ const defVariableTokenGroupToNode = (tokens: TokenList): AstNode => {
   }
 
   // TODO: handle name or value being a list, not a token
+  // TODO: check that token type is an identifier
   const name = (tokens[1] as Token).content;
   const value = (tokens[2] as Token).content;
 
@@ -120,18 +121,7 @@ const defVariableTokenGroupToNode = (tokens: TokenList): AstNode => {
   } as AstNodeDefVariable;
 };
 
-const tokensToAst = (tokens: Token[]): AstTree => {
- tokens = tokens.filter(token => token.type !== TokenType.Comment);
-
-  const [lvl, _, tokenGroup] = bracketizeTokens(tokens);
-
-  if (lvl > 0) {
-    throw 'Expected closing parenthesis';
-  }
-  if (lvl < 0) {
-    throw 'Expected opening parenthesis';
-  }
-
+const tokenGroupToNode = (tokenGroup: TokenList): AstNode[] => {
   const nodes: AstNode[] = [];
 
   tokenGroup.forEach((group) => {
@@ -159,9 +149,39 @@ const tokensToAst = (tokens: Token[]): AstTree => {
     if (firstToken?.type === TokenType.DefVariable) {
       nodes.push(defVariableTokenGroupToNode(group));
     }
+    if (firstToken?.type === TokenType.DefFunction) {
+      nodes.push(defFunctionTokenGroupToNode(group));
+    }
   });
 
-  return { nodes };
+  return nodes;
+};
+
+const defFunctionTokenGroupToNode = (tokens: TokenList): AstNode => {
+  const name = (tokens[1] as Token).content;
+  const params = (tokens[2] as Token[]).map(token => token.content);
+
+  return {
+    type: AstNodeType.DefFunction,
+    name,
+    params,
+    children: tokenGroupToNode([tokens[3]])
+  } as AstNodeDefFunction;
+};
+
+const tokensToAst = (tokens: Token[]): AstTree => {
+ tokens = tokens.filter(token => token.type !== TokenType.Comment);
+
+  const [lvl, _, tokenGroup] = bracketizeTokens(tokens);
+
+  if (lvl > 0) {
+    throw 'Expected closing parenthesis';
+  }
+  if (lvl < 0) {
+    throw 'Expected opening parenthesis';
+  }
+
+  return { nodes: tokenGroupToNode(tokenGroup) };
 };
 
 export enum AstNodeType {
@@ -171,6 +191,7 @@ export enum AstNodeType {
   Expression,
   DefConstant,
   DefVariable,
+  DefFunction,
 }
 
 export interface AstNode {
@@ -191,6 +212,11 @@ export interface AstNodeDefConstant extends AstNode {
 export interface AstNodeDefVariable extends AstNode {
   name: string;
   value: string;
+}
+
+export interface AstNodeDefFunction extends AstNode {
+  name: string;
+  params: string[];
 }
 
 export interface AstTree {
