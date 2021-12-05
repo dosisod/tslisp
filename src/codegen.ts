@@ -87,17 +87,17 @@ const astFunctionToJs = (node: AstNodeFunction): string => {
 };
 
 const astDefConstantToJs = (node: AstNodeDefConstant): string => {
-  return `const ${node.name} = ${node.value};`;
+  return `global.${node.name} = ${node.value};`;
 };
 
 const astDefVariableToJs = (node: AstNodeDefVariable): string => {
-  return `let ${node.name} = ${node.value};`;
+  return `global.${node.name} = ${node.value};`;
 };
 
 const astDefFunctionToJs = (node: AstNodeDefFunction): string => {
   const body = astToJS({ nodes: node.children! });
 
-  return `const ${node.name} = (${node.params.join(", ")}) => { ${body} };`;
+  return `global.${node.name} = (${node.params.join(", ")}) => { ${body} };`;
 };
 
 export const astToJS = (tree: AstTree): string => {

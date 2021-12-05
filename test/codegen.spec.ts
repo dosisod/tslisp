@@ -26,19 +26,19 @@ describe('codegen', () => {
   it('will transpile basic defconstant', () => {
     const transpiled = transpileFixture('(defconstant pi 3.14)');
 
-    expect(transpiled).toBe('const pi = 3.14;');
+    expect(transpiled).toBe('global.pi = 3.14;');
   });
 
   it('will transpile basic defvar', () => {
     const transpiled = transpileFixture('(defvar pi 3.14)');
 
-    expect(transpiled).toBe('let pi = 3.14;');
+    expect(transpiled).toBe('global.pi = 3.14;');
   });
 
   it('will transpile defun node', () => {
     const transpiled = transpileFixture('(defun f (x) (defvar y x))');
 
-    expect(transpiled).toBe('const f = (x) => { let y = x; };');
+    expect(transpiled).toBe('global.f = (x) => { global.y = x; };');
   });
 
   it('will handle built-in operations', () => {

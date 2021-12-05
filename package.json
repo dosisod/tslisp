@@ -13,7 +13,8 @@
   "devDependencies": {},
   "scripts": {
     "dev": "esbuild ./src/ --outdir=dist --watch",
-    "build": "tsc --noEmit && esbuild ./src/ --outdir=dist",
+    "repl": "npm run build && node ./dist/src.js",
+    "build": "tsc --noEmit && esbuild ./src/ --bundle --platform=node --outdir=dist",
     "test": "jest"
   },
   "repository": {
