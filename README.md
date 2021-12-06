@@ -1,6 +1,14 @@
 # TSLisp
 
-A small LISP dialect written in TypeScript.
+A small LISP-like dialect written in TypeScript.
+
+# Installation / Usage
+
+```
+$ git clone https://github.com/dosisod/tslisp
+$ npm install
+$ npm run repl
+```
 
 # Syntax
 
@@ -18,13 +26,10 @@ A small LISP dialect written in TypeScript.
 (defconstant pi 3.1415)
 
 ; define a function called square, that takes 1 argument, and squares it
-(defn square [x] (* x x))
+(defun square (x) (* x x))
 
 ; call TypeScript function console.log with argument "hello world"
 (console.log "hello world")
-
-; get the first 5 perfect squares
-(map square (take 5 ints))
 ```
 
 ## TypeScript Operators in TSLisp
