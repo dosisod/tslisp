@@ -1,18 +1,29 @@
 /**
-@module tokenize
-@author Logan Hunt
+ * @module tokenize
+ * @author Logan Hunt
+ *
+ * Tokens are strings of characters which have some semantic meaning, ie,
+ * a number, an identifier, and so on.
+ *
+ * Once code has been split up into tokens, the tokens can be analyzed, and
+ * a more complex representation of the program can be created.
+ */
 
-Tokens are strings of characters which have some semantic meaning, ie,
-a number, an identifier, and so on.
-
-Once code has been split up into tokens, the tokens can be analyzed, and
-a more complex representation of the program can be created.
-*/
-
+/**
+ * @param str to check
+ * @returns true if `str` is numeric
+ */
 const isNumeric = (str: string): boolean => {
   return !isNaN(parseFloat(str));
 };
 
+/**
+ * Try and detect the type of the token. By default, unknown tokens are
+ * identifiers, which can allow for creating interesting functions
+ *
+ * @param str to check
+ * @returns the type of the token
+ */
 const detectTokenType = (str: string): TokenType => {
   if (str === '(') return TokenType.OpenParen;
   if (str === ')') return TokenType.CloseParen;
@@ -27,6 +38,15 @@ const detectTokenType = (str: string): TokenType => {
   return TokenType.Identifier;
 };
 
+/**
+ * The first part of tokenizing is spliting up the string into tokens. For
+ * example, the start of a comment to the end of the line is a token, the
+ * start and end of a string is a token, and semantically important
+ * characters like '(' and ')'.
+ *
+ * @param str to "chunk"
+ * @returns chunk of strings
+ */
 const chunkString = (str: string): string[] => {
   const chunks: string[] = [];
   let chunk = '';
@@ -68,13 +88,16 @@ const chunkString = (str: string): string[] => {
   return chunks;
 };
 
-const tokenize = (str: string): Token[] => {
-  return chunkString(str).map(token => ({
-    type: detectTokenType(token),
-    content: token
-  }));
-};
-
+/**
+ * Convert string to tokens, and assign token type to each string.
+ *
+ * @param str to tokenize
+ * @returns list of tokens
+ */
+const tokenize = (str: string): Token[] => chunkString(str).map(chunk => ({
+  type: detectTokenType(chunk),
+  content: chunk
+}));
 
 export enum TokenType {
   OpenParen,
@@ -89,11 +112,9 @@ export enum TokenType {
   DefVariable,
 }
 
-
 export interface Token {
   type: TokenType;
   content: string;
 }
-
 
 export default tokenize;

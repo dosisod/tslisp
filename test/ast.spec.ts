@@ -67,13 +67,6 @@ describe('tokensToAst', () => {
     expect(node.children?.[0].token?.type).toBe(TokenType.Number);
   });
 
-  it('will fail if trying to use nested list in function', () => {
-    const tokens = tokenize('(f (x))');
-
-    expect(() => tokensToAst(tokens))
-      .toThrow('Nested nodes in expression not supported yet');
-  });
-
   it('will not allow list as first element of list', () => {
     const tokens = tokenize('(())');
 
@@ -167,5 +160,36 @@ describe('tokensToAst', () => {
     expect(node.params.length).toBe(0);
     expect(node.children?.length).toBe(1);
     expect(node.children?.[0].type).toBe(AstNodeType.DefConstant);
+  });
+
+  it('will parse function with multiple statements in body', () => {
+    const tokens = tokenize('(defun f () (defconstant x 1) (defconstant y 2))');
+
+    const tree = tokensToAst(tokens);
+
+    expect(tree.nodes.length).toBe(1);
+
+    const node = (tree.nodes[0] as AstNodeDefFunction);
+    expect(node.type).toBe(AstNodeType.DefFunction);
+    expect(node.name).toBe('f');
+    expect(node.params.length).toBe(0);
+    expect(node.children?.length).toBe(2);
+    expect(node.children?.[0].type).toBe(AstNodeType.DefConstant);
+    expect(node.children?.[1].type).toBe(AstNodeType.DefConstant);
+  });
+
+  it('will allow nested function expressions', () => {
+    const tokens = tokenize('(f (g x))');
+
+    const tree = tokensToAst(tokens);
+
+    const f = tree.nodes[0] as AstNodeFunction;
+    const g = f.children?.[0] as AstNodeFunction;
+
+    expect(f.type).toBe(AstNodeType.Function);
+    expect(f.name).toBe('f');
+
+    expect(g.type).toBe(AstNodeType.Function);
+    expect(g.name).toBe('g');
   });
 });

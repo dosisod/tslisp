@@ -62,12 +62,11 @@ $ npm run repl
 |-------------|------------|
 | `(filter f l)`    | `l.filter(f)`   |
 | `(map f l)`    | `l.map(f)`   |
-| `(reduce f l default)`    | `l.reduce(f, default)`   |
 | `(some f l)`    | `l.some(f)`   |
 | `(every f l)`    | `l.every(f)`   |
 | `(length str)`    | `str.length`   |
 | `(list x y z)` | `[x, y, z]` |
-| `(includes l v)` | `l.includes(v)` |
+| `(includes v l)` | `l.includes(v)` |
 
 # TypeScript Control Flow in TSLisp
 
